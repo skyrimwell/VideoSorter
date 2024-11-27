@@ -1,5 +1,6 @@
 import os
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QFileDialog, QListWidget
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QFileDialog, QListWidget, QSlider, QHBoxLayout
+from PyQt5.QtCore import Qt
 from components.video_player import VideoPlayer
 
 
@@ -25,6 +26,21 @@ class videoSorterApp(QWidget):
 
         self.video_player = VideoPlayer(self)
         layout.addWidget(self.video_player.video_widget)
+        control_layout = QHBoxLayout()
+
+        # Кнопка паузы/воспроизведения
+        self.pause_button = QPushButton('Пауза')
+        self.pause_button.clicked.connect(self.toggle_pause)
+        control_layout.addWidget(self.pause_button)
+
+        # Слайдер громкости
+        self.volume_slider = QSlider(Qt.Horizontal)
+        self.volume_slider.setRange(0, 100)
+        self.volume_slider.setValue(50)
+        self.volume_slider.valueChanged.connect(self.set_volume)
+        control_layout.addWidget(self.volume_slider)
+
+        layout.addLayout(control_layout)
 
         self.setLayout(layout)
 
@@ -43,3 +59,10 @@ class videoSorterApp(QWidget):
     def play_video(self, item):
         video_path = os.path.join(self.folder_path, item.text())
         self.video_player.play(video_path)
+
+    def toggle_pause(self):
+        self.video_player.toggle_pause()
+        self.pause_button.setText('Paused' if not self.video_player.is_paused else 'Play')
+
+    def set_volume(self, value):
+        self.video_player.set_volume(value)
