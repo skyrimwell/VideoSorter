@@ -1,8 +1,8 @@
 import os
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QFileDialog, QListWidget, QSlider, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QFileDialog, QListWidget, QSlider, QHBoxLayout, QMenuBar, QAction
 from PyQt5.QtCore import Qt
 from components.video_player import VideoPlayer
-
+from ui.settings_window import SettingsWindow
 
 class videoSorterApp(QWidget):
     def __init__(self):
@@ -14,7 +14,14 @@ class videoSorterApp(QWidget):
         self.setWindowTitle('Video Sorter')
         self.setGeometry(100, 100, 800, 600)
 
+        # Меню
+        menubar = QMenuBar(self)
+        settings_action = QAction('Settings', self)
+        settings_action.triggered.connect(self.open_settings_window)
+        menubar.addAction(settings_action)
+
         layout = QVBoxLayout()
+        layout.setMenuBar(menubar)
 
         self.folder_button = QPushButton('Select Folder')
         self.folder_button.clicked.connect(self.select_folder)
@@ -28,12 +35,10 @@ class videoSorterApp(QWidget):
         layout.addWidget(self.video_player.video_widget)
         control_layout = QHBoxLayout()
 
-        # Кнопка паузы/воспроизведения
         self.pause_button = QPushButton('Пауза')
         self.pause_button.clicked.connect(self.toggle_pause)
         control_layout.addWidget(self.pause_button)
 
-        # Слайдер громкости
         self.volume_slider = QSlider(Qt.Horizontal)
         self.volume_slider.setRange(0, 100)
         self.volume_slider.setValue(50)
@@ -66,3 +71,7 @@ class videoSorterApp(QWidget):
 
     def set_volume(self, value):
         self.video_player.set_volume(value)
+
+    def open_settings_window(self):
+        self.settings_window = SettingsWindow()
+        self.settings_window.show()
